@@ -9,7 +9,7 @@
 import TabBar from './components/TabBar.vue'
 </script>
 
-<style>
+<style lang="less">
 * {
   margin: 0;
   padding: 0;
@@ -27,10 +27,10 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   height: 100%;
-}
 
-.app-container {
-  min-height: 100%;
-  padding-bottom: 50px; /* 为底部导航栏留出空间 */
+  .app-container {
+    min-height: 100%;
+    padding-bottom: 50px;
+  }
 }
 </style> 

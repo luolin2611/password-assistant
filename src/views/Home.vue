@@ -1,82 +1,90 @@
 <template>
   <div class="home">
-    <!-- 搜索区域 -->
-    <div class="search-section">
-      <van-search
-        v-model="searchText"
-        placeholder="搜索平台名称"
-        shape="round"
-      />
-      <van-button 
-        type="primary" 
-        size="small"
-        round
-        @click="onSearch"
-      >
-        搜索
-      </van-button>
+    <!-- 固定搜索区域 -->
+    <div class="search-container">
+      <van-cell-group inset>
+        <div class="search-section">
+          <van-search
+            v-model="searchText"
+            placeholder="搜索平台名称"
+            :background="'transparent'"
+            class="custom-search"
+          />
+          <van-button 
+            type="primary" 
+            class="search-btn"
+            @click="onSearch"
+          >
+            搜索
+          </van-button>
+        </div>
+      </van-cell-group>
     </div>
 
     <!-- 密码列表 -->
-    <div class="password-list">
-      <van-swipe-cell
-        v-for="item in passwordList"
-        :key="item.id"
-        :before-close="beforeClose"
-      >
-        <van-cell>
-          <template #default>
-            <div class="password-item">
-              <!-- 左侧内容 -->
-              <div class="item-left">
-                <van-image
-                  round
-                  width="40px"
-                  height="40px"
-                  :src="item.imageUrl"
-                />
-                <div class="item-info">
-                  <div class="platform-name">{{ item.platformName }}</div>
-                  <div class="description">{{ item.description }}</div>
-                </div>
-              </div>
-              
-              <!-- 右侧内容 -->
-              <div class="item-right">
-                <div class="update-time">{{ item.updateTime }}</div>
-                <div class="password-section">
-                  <span 
-                    class="password" 
-                    @click="copyPassword(item)"
-                  >
-                    {{ showPasswordMap[item.id] ? item.password : '••••••' }}
-                  </span>
-                  <van-icon 
-                    :name="showPasswordMap[item.id] ? 'eye' : 'eye-o'"
-                    @click.stop="togglePasswordVisibility(item.id)"
+    <div class="content">
+      <div class="password-list">
+        <van-swipe-cell
+          v-for="item in passwordList"
+          :key="item.id"
+          :before-close="beforeClose"
+        >
+          <van-cell class="password-cell" @click="viewDetail(item.id)">
+            <template #default>
+              <div class="password-item">
+                <!-- 左侧内容 -->
+                <div class="item-left">
+                  <van-image
+                    round
+                    width="40px"
+                    height="40px"
+                    :src="item.imageUrl"
                   />
+                  <div class="item-info">
+                    <div class="platform-name">{{ item.platformName }}</div>
+                    <div class="description">{{ item.description }}</div>
+                  </div>
+                </div>
+                
+                <!-- 右侧内容 -->
+                <div class="item-right">
+                  <div class="password-section">
+                    <span 
+                      class="password" 
+                      @click="copyPassword(item)"
+                    >
+                      {{ showPasswordMap[item.id] ? item.password : '••••••' }}
+                    </span>
+                    <van-icon 
+                      :name="showPasswordMap[item.id] ? 'eye' : 'eye-o'"
+                      @click.stop="togglePasswordVisibility(item.id)"
+                    />
+                  </div>
+                  <div class="update-time">{{ item.updateTime }}</div>
                 </div>
               </div>
+            </template>
+          </van-cell>
+
+          <!-- 左滑操作按钮 -->
+          <template #right>
+            <div class="swipe-actions">
+              <van-button 
+                class="swipe-btn top-btn"
+                @click="toggleTop(item.id)"
+              >
+                <van-icon name="star-o" size="20" />
+              </van-button>
+              <van-button 
+                class="swipe-btn delete-btn"
+                @click="deletePassword(item.id)"
+              >
+                <van-icon name="delete-o" size="20" />
+              </van-button>
             </div>
           </template>
-        </van-cell>
-
-        <!-- 左滑操作按钮 -->
-        <template #right>
-          <van-button 
-            square 
-            type="primary" 
-            text="置顶"
-            @click="toggleTop(item.id)"
-          />
-          <van-button 
-            square 
-            type="danger" 
-            text="删除"
-            @click="deletePassword(item.id)"
-          />
-        </template>
-      </van-swipe-cell>
+        </van-swipe-cell>
+      </div>
     </div>
 
     <!-- 新增按钮 -->
@@ -85,6 +93,7 @@
       @click="goToAdd"
       axis="xy"
       magnetic="x"
+      v-model:offset="bubbleOffset"
     />
   </div>
 </template>
@@ -99,6 +108,7 @@ const router = useRouter()
 const searchText = ref('')
 const passwordList = ref<Password[]>([])
 const showPasswordMap = reactive<Record<string, boolean>>({})
+const bubbleOffset = ref({ x: 300, y: 700 });
 
 // 添加测试数据
 onMounted(() => {
@@ -112,6 +122,46 @@ onMounted(() => {
       createTime: '2024-03-20',
       imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
       isTop: false
+    },
+    {
+      id: '2',
+      platformName: 'Google',
+      password: 'abc123',
+      description: 'Google账号密码',
+      updateTime: '2024-03-19',
+      createTime: '2024-03-19',
+      imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
+      isTop: true
+    },
+    {
+      id: '2',
+      platformName: 'Google',
+      password: 'abc123',
+      description: 'Google账号密码',
+      updateTime: '2024-03-19',
+      createTime: '2024-03-19',
+      imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
+      isTop: true
+    },
+    {
+      id: '2',
+      platformName: 'Google',
+      password: 'abc123',
+      description: 'Google账号密码',
+      updateTime: '2024-03-19',
+      createTime: '2024-03-19',
+      imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
+      isTop: true
+    },
+    {
+      id: '2',
+      platformName: 'Google',
+      password: 'abc123',
+      description: 'Google账号密码',
+      updateTime: '2024-03-19',
+      createTime: '2024-03-19',
+      imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
+      isTop: true
     },
     {
       id: '2',
@@ -235,87 +285,157 @@ const beforeClose = ({ position, instance }) => {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .home {
-  padding: 16px;
   min-height: 100vh;
   background: #f7f8fa;
-}
 
-.search-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
+  .search-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: #f7f8fa;
+    padding: 12px 16px;
 
-:deep(.van-search) {
-  flex: 1;
-  padding: 0;
-  background: transparent;
-}
+    :deep(.van-cell-group--inset) {
+      margin: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
 
-.password-list {
-  margin-bottom: 100px;
-}
+    .search-section {
+      display: flex;
+      align-items: center;
+      padding: 8px;
 
-.password-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
+      .custom-search {
+        flex: 1;
+        background: transparent;
 
-.item-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+        :deep(.van-search__content) {
+          background: #f5f5f5;
+          border-radius: 4px;
+        }
 
-.item-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+        :deep(.van-search) {
+          padding: 0;
+        }
+      }
 
-.platform-name {
-  font-size: 16px;
-  font-weight: bold;
-  color: #323233;
-}
+      .search-btn {
+        margin-left: 12px;
+        height: 36px;
+        border-radius: 4px;
+        padding: 0 16px;
+      }
+    }
+  }
 
-.description {
-  font-size: 12px;
-  color: #969799;
-}
+  .content {
+    padding: 0 16px;
+    padding-top: 90px;
+    margin-bottom: 50px;
 
-.item-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
+    .password-list {
+      margin-bottom: 100px;
 
-.update-time {
-  font-size: 12px;
-  color: #969799;
-}
+      .password-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
 
-.password-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+        .item-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
 
-.password {
-  font-family: monospace;
-  color: #666;
-  cursor: pointer;
-}
+          .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
 
-:deep(.van-floating-bubble) {
-  --van-floating-bubble-size: 60px;
-  right: 20px;
-  bottom: 140px;
+            .platform-name {
+              font-size: 16px;
+              font-weight: bold;
+              color: #323233;
+            }
+
+            .description {
+              font-size: 12px;
+              color: #969799;
+            }
+          }
+        }
+
+        .item-right {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 4px;
+
+          .update-time {
+            font-size: 12px;
+            color: #969799;
+          }
+
+          .password-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .password {
+              font-family: monospace;
+              color: #666;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+
+      .password-cell {
+        background: #fff;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+
+      :deep(.van-swipe-cell__right) {
+        height: 100%;
+
+        .swipe-actions {
+          height: 100%;
+          display: flex;
+
+          .swipe-btn {
+            height: 100%;
+            width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+
+            &.top-btn {
+              background: #1989fa;
+              color: #fff;
+            }
+
+            &.delete-btn {
+              background: #ee0a24;
+              color: #fff;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  :deep(.van-floating-bubble) {
+    --van-floating-bubble-size: 60px;
+    right: 20px;
+    bottom: 140px;
+  }
 }
 </style> 
