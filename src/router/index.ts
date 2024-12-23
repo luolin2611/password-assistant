@@ -4,22 +4,22 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/Home.vue')
+    component: () => import('../views/home/index.vue')
   },
   {
     path: '/profile',
     name: 'Profile',
-    component: () => import('../views/Profile.vue')
+    component: () => import('../views/profile/index.vue')
   },
   {
     path: '/password-detail/:id',
     name: 'PasswordDetail',
-    component: () => import('../views/PasswordDetail.vue')
+    component: () => import('../views/home/detail.vue')
   },
   {
     path: '/add-password',
     name: 'AddPassword',
-    component: () => import('../views/AddPassword.vue')
+    component: () => import('../views/home/add.vue')
   }
 ]
 
