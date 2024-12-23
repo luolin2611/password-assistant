@@ -13,6 +13,7 @@
             <van-button 
               type="primary" 
               class="search-btn"
+              size="small"
               @click="onSearch"
             >
               搜索
@@ -29,9 +30,9 @@
             :key="item.id"
             :before-close="beforeClose"
           >
-            <van-cell class="password-cell" @click="viewDetail(item.id)">
+            <van-cell class="password-cell">
               <template #default>
-                <div class="password-item">
+                <div class="password-item" @click="viewDetail(item.id)">
                   <!-- 左侧内容 -->
                   <div class="item-left">
                     <van-image
@@ -47,7 +48,7 @@
                   </div>
                   
                   <!-- 右侧内容 -->
-                  <div class="item-right">
+                  <div class="item-right" @click.stop>
                     <div class="password-section">
                       <span 
                         class="password" 
@@ -57,7 +58,7 @@
                       </span>
                       <van-icon 
                         :name="showPasswordMap[item.id] ? 'eye' : 'eye-o'"
-                        @click.stop="togglePasswordVisibility(item.id)"
+                        @click="togglePasswordVisibility(item.id)"
                       />
                     </div>
                     <div class="update-time">{{ item.updateTime }}</div>
@@ -297,7 +298,7 @@
       right: 0;
       z-index: 99;
       background: #f7f8fa;
-      padding: 12px 16px;
+      padding: 8px;
   
       :deep(.van-cell-group--inset) {
         margin: 0;
@@ -309,7 +310,6 @@
       .search-section {
         display: flex;
         align-items: center;
-        padding: 8px;
   
         .custom-search {
           flex: 1;
@@ -335,8 +335,8 @@
     }
   
     .content {
-      padding: 0 16px;
-      padding-top: 90px;
+      padding: 0 8px;
+      padding-top: 76px;
       margin-bottom: 50px;
   
       .password-list {
@@ -345,28 +345,32 @@
         .password-item {
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          align-items: flex-start;
           width: 100%;
+          cursor: pointer;
   
           .item-left {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
   
             .item-info {
               display: flex;
               flex-direction: column;
               gap: 4px;
+              padding-top: 2px;
   
               .platform-name {
                 font-size: 16px;
                 font-weight: bold;
                 color: #323233;
+                line-height: 1.2;
               }
   
               .description {
                 font-size: 12px;
                 color: #969799;
+                line-height: 1.2;
               }
             }
           }
@@ -390,6 +394,10 @@
               .password {
                 font-family: monospace;
                 color: #666;
+                cursor: pointer;
+              }
+  
+              .van-icon {
                 cursor: pointer;
               }
             }
