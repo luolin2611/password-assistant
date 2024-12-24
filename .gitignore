@@ -2,3 +2,6 @@
 package-lock.json
 .idea
 yarn.lock
+.DS_Store
+dist
+.vscode
