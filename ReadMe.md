@@ -1,4 +1,17 @@
 # 密码助手
+## 在线预览
+- [GitHub Pages](https://你的用户名.github.io/password-assistant/)
+## 部署说明
+项目使用 GitHub Actions 自动部署到 GitHub Pages。当推送代码到 main 分支时，会自动触发构建和部署流程。
+### 手动部署步骤
+```bash
+# 构建项目
+yarn build
+# 推送到 GitHub
+git add .
+git commit -m "your commit message"
+git push origin main
+```
 这是一个密码助手，我可以通过该平台进行如下的操作：a.添加密码记录。b.查看密码记录。c.删除密码记录。d.置顶密码记录。
 密码助手的组成元素：平台名称，密码，描述信息，更新时间，创建时间，项目图片(类似于头像)。
 该项目主要包含了如下两个tab页面。
