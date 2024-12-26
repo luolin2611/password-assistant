@@ -46,6 +46,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { showDialog, showToast } from 'vant'
 
 const router = useRouter()
 
@@ -62,7 +63,22 @@ const handleEdit = () => {
 }
 
 const handleLogout = () => {
-  // 实现退出登录逻辑
+  showDialog({
+    title: '提示',
+    message: '确定要退出登录吗？',
+    showCancelButton: true,
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    confirmButtonColor: '#ee0a24'
+  }).then((action) => {
+    if (action === 'confirm') {
+      // 清除登录状态
+      localStorage.removeItem('isLoggedIn')
+      showToast('退出成功')
+      // 跳转到登录页
+      router.replace('/login')
+    }
+  })
 }
 </script>
 

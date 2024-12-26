@@ -1,12 +1,20 @@
 <template>
   <div class="app-container">
     <router-view />
-    <tab-bar />
+    <tab-bar v-if="showTabBar" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import TabBar from './components/TabBar.vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const showTabBar = computed(() => {
+  // 只在指定页面显示 TabBar
+  return route.meta.showTabBar === true
+})
 </script>
 
 <style lang="less">
