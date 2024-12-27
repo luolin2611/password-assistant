@@ -1,0 +1,10 @@
+server:
+  port: 10010
+
+# 生成mysql连接配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:13309/password-assistant?characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: rollin123
