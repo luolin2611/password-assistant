@@ -14,7 +14,8 @@
     "@vant/use": "^1.6.0",
     "vant": "^4.8.1",
     "vue": "^3.3.11",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "axios": "^1.6.7"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",

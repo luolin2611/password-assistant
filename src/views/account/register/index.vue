@@ -32,7 +32,7 @@
               size="small" 
               type="primary"
               :disabled="!!countdown"
-              @click="sendVerifyCode"
+              @click="handleSendVerifyCode"
             >
               {{ countdown ? `${countdown}s` : '获取验证码' }}
             </van-button>
@@ -85,6 +85,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
+import { sendVerifyCode, register } from '@/api/user'
 
 const router = useRouter()
 const countdown = ref(0)
@@ -111,20 +112,37 @@ const startCountdown = () => {
   }, 1000)
 }
 
-const sendVerifyCode = async () => {
+const handleSendVerifyCode = async () => {
   if (!formData.email) {
     showToast('请输入邮箱')
     return
   }
-  // 这里应该实现发送验证码的逻辑
-  showToast('验证码已发送')
-  startCountdown()
+  try {
+    await sendVerifyCode(formData.email)
+    showToast('验证码已发送')
+    startCountdown()
+  } catch (error) {
+    // 错误已在请求拦截器中处理
+  }
 }
 
-const onSubmit = () => {
-  // 这里应该实现注册逻辑
-  showToast('注册成功')
-  router.replace('/login')
+const onSubmit = async () => {
+  try {
+    const data = await register({
+      username: formData.username,
+      email: formData.email,
+      verifyCode: formData.verifyCode,
+      password: formData.password
+    })
+    // 保存 token
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('userId', data.userId)
+    localStorage.setItem('isLoggedIn', 'true')
+    showToast('注册成功')
+    router.replace('/')
+  } catch (error) {
+    // 错误已在请求拦截器中处理
+  }
 }
 
 const onClickLeft = () => {
