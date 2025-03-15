@@ -47,6 +47,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showDialog, showToast } from 'vant'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 
@@ -73,7 +74,8 @@ const handleLogout = () => {
   }).then((action) => {
     if (action === 'confirm') {
       // 清除登录状态
-      localStorage.removeItem('isLoggedIn')
+      const userStore = useUserStore()
+      userStore.logout()
       showToast('退出成功')
       // 跳转到登录页
       router.replace('/login')

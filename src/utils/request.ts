@@ -31,11 +31,11 @@ request.interceptors.response.use(
     // 关闭加载框
     closeToast()
     
-    const { code, message, data } = response.data
+    const { code, message, body } = response.data
     
-    // 根据后端约定的状态码判断请求是否成功
-    if (code === 200) {
-      return data
+    // 使用新的成功状态码
+    if (code === 'SUC0000') {
+      return body
     } else {
       showToast({
         message: message || '请求失败',

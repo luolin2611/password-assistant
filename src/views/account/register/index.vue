@@ -86,9 +86,11 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import { sendVerifyCode, register } from '@/api/user'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const countdown = ref(0)
+const userStore = useUserStore()
 
 const formData = reactive({
   username: '',
@@ -128,18 +130,19 @@ const handleSendVerifyCode = async () => {
 
 const onSubmit = async () => {
   try {
-    const data = await register({
-      username: formData.username,
-      email: formData.email,
-      verifyCode: formData.verifyCode,
-      password: formData.password
+    const data = await register(formData)
+    userStore.login({
+      token: data.token,
+      user: {
+        id: parseInt(data.userId),
+        username: formData.username,
+        email: formData.email,
+        signature: '这家伙很懒，什么都没留下。',
+        avatarUrl: null
+      }
     })
-    // 保存 token
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('userId', data.userId)
-    localStorage.setItem('isLoggedIn', 'true')
     showToast('注册成功')
-    router.replace('/')
+    router.replace('/home')
   } catch (error) {
     // 错误已在请求拦截器中处理
   }

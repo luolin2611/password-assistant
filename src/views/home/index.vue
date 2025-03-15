@@ -102,7 +102,7 @@
   <script lang="ts" setup>
   import { ref, onMounted, reactive } from 'vue'
   import { useRouter } from 'vue-router'
-  import { Password } from '../types/password'
+  import type { Password } from '@/types'
   import { showToast } from 'vant'
   
   const router = useRouter()
@@ -275,13 +275,11 @@
     router.push('/add-password')
   }
   
-  const beforeClose = ({ position, instance }) => {
+  const beforeClose = ({ position, instance }: { position: string; instance: any }) => {
     switch (position) {
       case 'right':
         instance.close()
         break
-      default:
-        instance.close()
     }
   }
   </script>

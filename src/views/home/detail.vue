@@ -60,7 +60,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { showDialog, showToast } from 'vant'
-import { Password } from '../types/password'
+import type { Password } from '@/types'
 
 const router = useRouter()
 const route = useRoute()

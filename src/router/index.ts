@@ -8,6 +8,16 @@ const routes: Array<RouteRecordRaw> = [
     meta: { public: true }
   },
   {
+    path: '/',
+    redirect: '/home'
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: () => import('@/views/home/index.vue'),
+    meta: { showTabBar: true }
+  },
+  {
     path: '/register',
     name: 'Register',
     component: () => import('@/views/account/register/index.vue'),
@@ -18,12 +28,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ForgotPassword',
     component: () => import('@/views/account/forgot/index.vue'),
     meta: { public: true }
-  },
-  {
-    path: '/',
-    name: 'Home',
-    component: () => import('@/views/home/index.vue'),
-    meta: { showTabBar: true }
   },
   {
     path: '/profile',
@@ -54,11 +58,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn')
+  const isLoggedIn = sessionStorage.getItem('isLoggedIn')
   const isPublicPage = to.meta.public
   
   if (isPublicPage && isLoggedIn) {
-    next('/')
+    next('/home')
     return
   }
   

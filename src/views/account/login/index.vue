@@ -15,9 +15,11 @@
         <van-field
           v-model="formData.username"
           name="username"
-          label="用户名"
-          placeholder="请输入用户名"
-          :rules="[{ required: true, message: '请填写用户名' }]"
+          label="账号"
+          placeholder="请输入用户名/邮箱"
+          :rules="[
+            { required: true, message: '请填写用户名/邮箱' },
+          ]"
         />
         <van-field
           v-model="formData.password"
@@ -30,7 +32,7 @@
       </van-cell-group>
 
       <div class="submit-button">
-        <van-button block type="primary" native-type="submit">
+        <van-button round block type="primary" native-type="submit">
           登录
         </van-button>
       </div>
@@ -47,19 +49,22 @@
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
+import { login } from '@/api/user'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const formData = reactive({
-  username: '',
-  password: ''
+  username: 'luolin2611',
+  password: '123456'
 })
 
-const onSubmit = () => {
-  // 这里应该实现登录逻辑
+const onSubmit = async () => {
+  const data = await login(formData)
+  userStore.login(data)
   showToast('登录成功')
-  localStorage.setItem('isLoggedIn', 'true')
-  router.replace('/')
+  router.replace('/home')
 }
 </script>
 

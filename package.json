@@ -15,7 +15,8 @@
     "vant": "^4.8.1",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5",
-    "axios": "^1.6.7"
+    "axios": "^1.6.7",
+    "pinia": "^2.1.7"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",
