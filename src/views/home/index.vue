@@ -23,70 +23,79 @@
       </div>
   
       <!-- 密码列表 -->
-      <div class="content">
-        <div class="password-list">
-          <van-swipe-cell
-            v-for="item in passwordList"
-            :key="item.id"
-            :before-close="beforeClose"
-          >
-            <van-cell class="password-cell">
-              <template #default>
-                <div class="password-item" @click="viewDetail(item.id)">
-                  <!-- 左侧内容 -->
-                  <div class="item-left">
-                    <van-image
-                      round
-                      width="40px"
-                      height="40px"
-                      :src="item.imageUrl"
-                    />
-                    <div class="item-info">
-                      <div class="platform-name">{{ item.platformName }}</div>
-                      <div class="description">{{ item.description }}</div>
+      <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+        <van-list
+          v-model:loading="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="onLoad"
+        >
+          <div class="content">
+            <div class="password-list">
+              <van-swipe-cell
+                v-for="item in passwordList"
+                :key="item.id"
+                :before-close="beforeClose"
+              >
+                <van-cell class="password-cell">
+                  <template #default>
+                    <div class="password-item" @click="viewDetail(item.id)">
+                      <!-- 左侧内容 -->
+                      <div class="item-left">
+                        <van-image
+                          round
+                          width="40px"
+                          height="40px"
+                          :src="item.platformIcon"
+                        />
+                        <div class="item-info">
+                          <div class="platform-name">{{ item.platformName }}</div>
+                          <div class="description">{{ item.description }}</div>
+                        </div>
+                      </div>
+                      
+                      <!-- 右侧内容 -->
+                      <div class="item-right" @click.stop>
+                        <div class="password-section">
+                          <span 
+                            class="password" 
+                            @click="copyPassword(item)"
+                          >
+                            {{ showPasswordMap[item.id] ? item.password : '••••••' }}
+                          </span>
+                          <van-icon 
+                            :name="showPasswordMap[item.id] ? 'eye' : 'eye-o'"
+                            @click="togglePasswordVisibility(item.id)"
+                          />
+                        </div>
+                        <div class="update-time">{{ item.updatedTime }}</div>
+                      </div>
                     </div>
+                  </template>
+                </van-cell>
+    
+                <!-- 左滑操作按钮 -->
+                <template #right>
+                  <div class="swipe-actions">
+                    <van-button 
+                      class="swipe-btn top-btn"
+                      @click="toggleTop(item.id)"
+                    >
+                      <van-icon name="star-o" size="20" />
+                    </van-button>
+                    <van-button 
+                      class="swipe-btn delete-btn"
+                      @click="deletePassword(item.id)"
+                    >
+                      <van-icon name="delete-o" size="20" />
+                    </van-button>
                   </div>
-                  
-                  <!-- 右侧内容 -->
-                  <div class="item-right" @click.stop>
-                    <div class="password-section">
-                      <span 
-                        class="password" 
-                        @click="copyPassword(item)"
-                      >
-                        {{ showPasswordMap[item.id] ? item.password : '••••••' }}
-                      </span>
-                      <van-icon 
-                        :name="showPasswordMap[item.id] ? 'eye' : 'eye-o'"
-                        @click="togglePasswordVisibility(item.id)"
-                      />
-                    </div>
-                    <div class="update-time">{{ item.updateTime }}</div>
-                  </div>
-                </div>
-              </template>
-            </van-cell>
-  
-            <!-- 左滑操作按钮 -->
-            <template #right>
-              <div class="swipe-actions">
-                <van-button 
-                  class="swipe-btn top-btn"
-                  @click="toggleTop(item.id)"
-                >
-                  <van-icon name="star-o" size="20" />
-                </van-button>
-                <van-button 
-                  class="swipe-btn delete-btn"
-                  @click="deletePassword(item.id)"
-                >
-                  <van-icon name="delete-o" size="20" />
-                </van-button>
-              </div>
-            </template>
-          </van-swipe-cell>
-        </div>
-      </div>
+                </template>
+              </van-swipe-cell>
+            </div>
+          </div>
+        </van-list>
+      </van-pull-refresh>
   
       <!-- 新增按钮 -->
       <van-floating-bubble
@@ -102,142 +111,82 @@
   <script lang="ts" setup>
   import { ref, onMounted, reactive } from 'vue'
   import { useRouter } from 'vue-router'
-  import type { Password } from '@/types'
+  import type { Password, PasswordRecord, ApiResponse, PasswordPageResponse } from '@/types'
   import { showToast } from 'vant'
+  import { getPasswordPage } from '@/api/password'
   
   const router = useRouter()
   const searchText = ref('')
   const passwordList = ref<Password[]>([])
-  const showPasswordMap = reactive<Record<string, boolean>>({})
-  const bubbleOffset = ref({ x: 300, y: 700 });
+  const showPasswordMap = reactive<Record<number, boolean>>({})
+  const bubbleOffset = ref({ x: 300, y: 700 })
   
-  // 添加测试数据
-  onMounted(() => {
-    passwordList.value = [
-      {
-        id: '1',
-        platformName: 'GitHub',
-        password: '123456',
-        description: 'GitHub账号密码',
-        updateTime: '2024-03-20',
-        createTime: '2024-03-20',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: false
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
-      },
-      {
-        id: '2',
-        platformName: 'Google',
-        password: 'abc123',
-        description: 'Google账号密码',
-        updateTime: '2024-03-19',
-        createTime: '2024-03-19',
-        imageUrl: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        isTop: true
+  // 分页相关
+  const current = ref(1)
+  const size = ref(10)
+  const loading = ref(false)
+  const finished = ref(false)
+  const refreshing = ref(false)
+  const total = ref(0)
+  
+  // 获取密码列表
+  const getPasswordList = async (isRefresh = false) => {
+    loading.value = true
+    try {
+      const res = await getPasswordPage({
+        current: current.value,
+        size: size.value,
+        platformName: searchText.value
+      })
+
+      if (res) {
+        const { records, total } = res
+        // 转换数据格式，添加 isTop 属性
+        const formattedRecords = records.map((record: PasswordRecord) => ({
+          ...record,
+          isTop: false
+        }))
+        
+        if (isRefresh) {
+          passwordList.value = formattedRecords
+        } else {
+          passwordList.value.push(...formattedRecords)
+        }
+        total.value = total
+        finished.value = passwordList.value.length >= total
       }
-    ]
+    } finally {
+      loading.value = false
+      refreshing.value = false
+    }
+  }
+  
+  // 组件挂载时加载数据
+  onMounted(() => {
+    getPasswordList(true)
   })
   
-  const togglePasswordVisibility = (id: string) => {
+  // 加载更多
+  const onLoad = () => {
+    current.value++
+    getPasswordList()
+  }
+  
+  // 下拉刷新
+  const onRefresh = () => {
+    finished.value = false
+    current.value = 1
+    getPasswordList(true)
+  }
+  
+  // 搜索
+  const onSearch = () => {
+    finished.value = false
+    current.value = 1
+    getPasswordList(true)
+  }
+  
+  const togglePasswordVisibility = (id: number) => {
     showPasswordMap[id] = !showPasswordMap[id]
   }
   
@@ -246,16 +195,11 @@
     showToast('密码已复制到剪贴板')
   }
   
-  const onSearch = () => {
-    // 实现搜索逻辑
-    showToast('搜索功能开发中')
-  }
-  
-  const viewDetail = (id: string) => {
+  const viewDetail = (id: number) => {
     router.push(`/password-detail/${id}`)
   }
   
-  const toggleTop = (id: string) => {
+  const toggleTop = (id: number) => {
     const index = passwordList.value.findIndex(item => item.id === id)
     if (index !== -1) {
       passwordList.value[index].isTop = !passwordList.value[index].isTop
@@ -263,7 +207,7 @@
     }
   }
   
-  const deletePassword = (id: string) => {
+  const deletePassword = (id: number) => {
     const index = passwordList.value.findIndex(item => item.id === id)
     if (index !== -1) {
       passwordList.value.splice(index, 1)

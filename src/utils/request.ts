@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { showToast, showLoadingToast, closeToast } from 'vant'
+import { useUserStore } from '@/stores/user'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -16,6 +17,13 @@ request.interceptors.request.use(
       forbidClick: true,
       duration: 0
     })
+
+    // 添加 token 到请求头
+    const userStore = useUserStore()
+    if (userStore.token) {
+      config.headers['Authorization'] = userStore.token
+    }
+
     return config
   },
   error => {

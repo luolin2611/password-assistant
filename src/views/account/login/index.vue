@@ -62,7 +62,11 @@ const formData = reactive({
 
 const onSubmit = async () => {
   const data = await login(formData)
-  userStore.login(data)
+  const loginData = {
+    token: data.token,
+    user: data.user
+  }
+  userStore.login(loginData)
   showToast('登录成功')
   router.replace('/home')
 }

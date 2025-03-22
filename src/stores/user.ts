@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { UserInfo } from '../api/types'
+import type { UserInfo } from '@/api/types'
 
 interface UserState {
   token: string
